@@ -42,7 +42,7 @@ router.post("/",(req,res)=>{
 						foundUser.addSessions(newModel).then(newSession=>{
 							newSession.getSessions().then(sess=>{
 								var latestSess = sess.pop();
-								res.json({"code":1,"sessionID":latestSess.sessionID});
+								res.json({"code":1,"sessionID":latestSess.sessionID,"csrf":latestSess.csrf});
 							})
 						});
 					});
@@ -58,10 +58,12 @@ router.post("/",(req,res)=>{
 //Gets the current user associated with your session.
 router.get("/",(req,res)=>{
 	if (req.authed){
+		console.log(req.User.Sessions);
 		res.json({"code":1,user:{
 			"id":req.User.id,
 			"username":req.User.username,
-			"email":req.User.email
+			"email":req.User.email,
+			"csrf":req.User.Sessions[0].csrf			
 		}
 		});
 	}else{
