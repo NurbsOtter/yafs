@@ -55,4 +55,17 @@ router.post("/",(req,res)=>{
 		}
 	})
 });
+//Gets the current user associated with your session.
+router.get("/",(req,res)=>{
+	if (req.authed){
+		res.json({"code":1,user:{
+			"id":req.User.id,
+			"username":req.User.username,
+			"email":req.User.email
+		}
+		});
+	}else{
+		res.status(401).json({"code":-4,"message":"Unauthorized"});
+	}
+})
 module.exports = router;
