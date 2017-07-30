@@ -6,7 +6,8 @@ module.exports = function(sequelize,DataTypes){
 			type:DataTypes.STRING(64),
 			set(val){
 				this.setDataValue('username',val.trim().replace(' ','').toLowerCase());
-			}
+			},
+			unique:true
 		},
 		password:{
 			type:DataTypes.STRING(60),
@@ -19,7 +20,8 @@ module.exports = function(sequelize,DataTypes){
 			},
 			set(val){
 				this.setDataValue('email',val.trim().toLowerCase());
-			}
+			},
+			unique:true
 		}
 	});
 	User.beforeCreate((user,options)=>{

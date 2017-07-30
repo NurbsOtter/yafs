@@ -3,11 +3,13 @@ var express = require('express');
 
 var router = express.Router();
 var models = require('../models');
+var bcrypt = require('bcrypt');
 
 router.get("/test",(req,res)=>{
 	res.send("butts");
 });
 
+//Does the registration.
 router.put("/",(req,res)=>{	
 	models.User.create(req.body).then(()=>{
 		res.status(201).json({"code":1,message:"Registered"});
@@ -20,6 +22,36 @@ router.put("/",(req,res)=>{
 		}else{
 			console.log(err.name);
 			res.status(500).json({"code":-2,message:"Server error"});
+		}
+	})
+});
+//Does da login
+router.post("/",(req,res)=>{
+	req.body.username = req.body.username.trim().replace(' ','').toLowerCase();	
+	models.User.findOne({where:{
+		username:req.body.username
+	}}).then(foundUser=>{
+		if (foundUser === null){
+			res.status(401).json({"code":-3,"message":"User not found"});
+		}else{
+			bcrypt.compare(req.body.password,foundUser.password).then(result=>{				
+				if (!result){
+					res.status(401).json({"code":-4,"message":"Unauthorized"});					
+				}else{
+					var newModel = models.Session.create().then(newModel=>{
+						foundUser.addSessions(newModel).then(newSession=>{
+							newSession.getSessions().then(sess=>{
+								var latestSess = sess.pop();
+								res.json({"code":1,"sessionID":latestSess.sessionID});
+							})
+						});
+					});
+					
+				}
+			}).catch(err=>{
+				console.log(err);
+				res.status(500).json({"code":-2,"message":"Server Error"});
+			})
 		}
 	})
 });

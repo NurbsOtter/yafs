@@ -10,6 +10,10 @@ sequelize.authenticate()
 		console.log(err);
 	});
 db.User = sequelize.import('./user.js');
+db.Session = sequelize.import('./session.js');
+console.log(db.Session);
+db.User.hasMany(db.Session);
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+sequelize.sync();
 module.exports = db;
