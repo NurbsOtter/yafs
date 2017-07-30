@@ -57,8 +57,7 @@ router.post("/",(req,res)=>{
 });
 //Gets the current user associated with your session.
 router.get("/",(req,res)=>{
-	if (req.authed){
-		console.log(req.User.Sessions);
+	if (req.authed){		
 		res.json({"code":1,user:{
 			"id":req.User.id,
 			"username":req.User.username,
@@ -69,5 +68,19 @@ router.get("/",(req,res)=>{
 	}else{
 		res.status(401).json({"code":-4,"message":"Unauthorized"});
 	}
-})
+});
+//Logout.
+router.get("/logout/:csrf",(req,res)=>{
+	if (!req.authed){
+		res.status(401).json({"code":-4,"message":"Unauthorized"});
+		return
+	}
+	if (req.User.Sessions[0].csrf != req.params.csrf){
+		res.status(401).json({"code":-4,"message":"Unauthorized"});
+		return
+	}
+	req.User.Sessions[0].destroy().then(()=>{
+		res.status(200).json({"code":1,"message":"Logged out!"})
+	});
+});
 module.exports = router;
