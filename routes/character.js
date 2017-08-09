@@ -28,5 +28,18 @@ router.put("/",(req,res)=>{
 		}
 	});
 });
+//Gets a character by their ID TODO:"Private characters"
+router.get("/:id",(req,res)=>{
+	models.Character.findById(req.params.id).then(char=>{
+		if (char !== null){
+			res.json(char);
+		}else{
+			res.status(404).json({"code":-1,"message":"Character not found"})
+		}		
+	}).catch(err=>{
+		console.log(err);
+		res.status(500).json({"code":-2,"message":"Database error"})
+	});
+});
 
 module.exports = router;
