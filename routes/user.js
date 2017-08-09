@@ -83,4 +83,24 @@ router.get("/logout/:csrf",(req,res)=>{
 		res.status(200).json({"code":1,"message":"Logged out!"})
 	});
 });
+router.get("/:id/characters",(req,res)=>{
+	models.User.findById(req.params.id).then(user=>{		
+		if (user == null){
+			res.status(404).json({"code":-1,"message":"Not found"});
+			return;
+		}
+		user.getCharacters().then(chars=>{
+			if (chars != null){
+				res.json(chars);
+			}else{
+				res.status(404).json({"code":-1,"message":"Not found"});
+			}
+		}).catch(err=>{
+			console.log(err);
+			res.status(500).json({"code":-2,"message":"Database error"});
+		})
+	}).catch(err=>{		
+		res.status(500).json({"code":-2,"message":"Database error"});
+	})
+});
 module.exports = router;
